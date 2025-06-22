@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saucier: Cookbook</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        indigo: {
+                            600: 'rgb(75, 111, 149)',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        .hero-gradient {
+            background: linear-gradient(135deg, #f5f7fa 0%, rgb(200, 212, 227) 100%);
+        }
+        .feature-icon {
+            transition: all 0.3s ease;
+        }
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body class="font-sans bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <i class="fas fa-utensils text-2xl text-indigo-600 mr-2"></i>
+                        <span class="text-xl font-bold text-gray-900">Saucier</span>
+                    </div>
+                </div>
+                <div class="hidden md:ml-6 md:flex md:items-center space-x-8">
+                    <a href="#" class="text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 border-indigo-500 text-sm font-medium">Features</a>
+                    <a href="#" class="text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 text-sm font-medium">Download</a>
+                    <a href="#" class="text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 text-sm font-medium">Support</a>
+                </div>
+                <div class="flex items-center">
+                    <button class="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Get Started
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero-gradient">
+        <div class="max-w-7xl mx-auto py-16 px-4 sm:py-24 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h1 class="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl md:text-6xl">
+                    <span class="block">Your Digital</span>
+                    <span class="block text-indigo-600">Cookbook Companion</span>
+                </h1>
+                <p class="mt-3 max-w-md mx-auto text-base text-gray-500 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
+                    Organize, discover, and enjoy cooking with Saucier - the intuitive recipe manager that makes meal planning effortless.
+                </p>
+                <div class="mt-5 max-w-md mx-auto sm:flex sm:justify-center md:mt-8">
+                    <div class="rounded-md shadow">
+                        <a href="#" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10">
+                            Download Now
+                        </a>
+                    </div>
+                    <div class="mt-3 rounded-md shadow sm:mt-0 sm:ml-3">
+                        <a href="#" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-indigo-600 bg-white hover:bg-gray-50 md:py-4 md:text-lg md:px-10">
+                            Learn More
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="py-12 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="lg:text-center">
+                <h2 class="text-base text-indigo-600 font-semibold tracking-wide uppercase">Features</h2>
+                <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+                    Cook smarter, not harder
+                </p>
+                <p class="mt-4 max-w-2xl text-xl text-gray-500 lg:mx-auto">
+                    Saucier is packed with features to make your cooking experience seamless and enjoyable.
+                </p>
+            </div>
+
+            <div class="mt-10">
+                <div class="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3">
+                    <!-- Simple Design -->
+                    <div class="feature-card bg-white rounded-lg overflow-hidden shadow-md p-6 transition duration-300 ease-in-out">
+                        <div class="feature-icon mb-4 h-12 w-12 rounded-md bg-blue-50 text-indigo-600 flex items-center justify-center">
+                            <i class="fas fa-palette text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">Simple Design</h3>
+                        <p class="text-gray-500">
+                            Tired of searching for that recipe every time? Our intuitive layout will have you cooking in no time.
+                        </p>
+                    </div>
+
+                    <!-- Search And Filter -->
+                    <div class="feature-card bg-white rounded-lg overflow-hidden shadow-md p-6 transition duration-300 ease-in-out">
+                        <div class="feature-icon mb-4 h-12 w-12 rounded-md bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                            <i class="fas fa-search text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">Search And Filter</h3>
+                        <p class="text-gray-500">
+                            Quickly filter and search your recipes for easy access to exactly what you need.
+                        </p>
+                    </div>
+
+                    <!-- Folders -->
+                    <div class="feature-card bg-white rounded-lg overflow-hidden shadow-md p-6 transition duration-300 ease-in-out">
+                        <div class="feature-icon mb-4 h-12 w-12 rounded-md bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                            <i class="fas fa-folder text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">Folders</h3>
+                        <p class="text-gray-500">
+                            Organize your recipes into folders by cuisine, occasion, or any system that works for you.
+                        </p>
+                    </div>
+
+                    <!-- Save From The Web -->
+                    <div class="feature-card bg-white rounded-lg overflow-hidden shadow-md p-6 transition duration-300 ease-in-out">
+                        <div class="feature-icon mb-4 h-12 w-12 rounded-md bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                            <i class="fas fa-cloud-download-alt text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">Save From The Web</h3>
+                        <p class="text-gray-500">
+                            Easily save recipes from your favorite websites using the built-in app extension.
+                        </p>
+                    </div>
+
+                    <!-- Add notes -->
+                    <div class="feature-card bg-white rounded-lg overflow-hidden shadow-md p-6 transition duration-300 ease-in-out">
+                        <div class="feature-icon mb-4 h-12 w-12 rounded-md bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                            <i class="fas fa-sticky-note text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">Add Notes</h3>
+                        <p class="text-gray-500">
+                            Add recipe notes and reminders for next time you cook, so you never forget your adjustments.
+                        </p>
+                    </div>
+
+                    <!-- Edit -->
+                    <div class="feature-card bg-white rounded-lg overflow-hidden shadow-md p-6 transition duration-300 ease-in-out">
+                        <div class="feature-icon mb-4 h-12 w-12 rounded-md bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                            <i class="fas fa-edit text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">Edit Recipes</h3>
+                        <p class="text-gray-500">
+                            Needs a little more salt? Easily edit your saved recipes to match your preferences.
+                        </p>
+                    </div>
+
+                    <!-- Grocery Lists -->
+                    <div class="feature-card bg-white rounded-lg overflow-hidden shadow-md p-6 transition duration-300 ease-in-out">
+                        <div class="feature-icon mb-4 h-12 w-12 rounded-md bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                            <i class="fas fa-shopping-cart text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">Grocery Lists</h3>
+                        <p class="text-gray-500">
+                            Easily save your recipe ingredients to your Reminders app grocery list with one tap.
+                        </p>
+                    </div>
+
+                    <!-- Sharing -->
+                    <div class="feature-card bg-white rounded-lg overflow-hidden shadow-md p-6 transition duration-300 ease-in-out">
+                        <div class="feature-icon mb-4 h-12 w-12 rounded-md bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                            <i class="fas fa-share-alt text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">Sharing</h3>
+                        <p class="text-gray-500">
+                            Share your recipes with friends! Either send them a sauce file or the recipe URL.
+                        </p>
+                    </div>
+
+                    <!-- iCloud Sync -->
+                    <div class="feature-card bg-white rounded-lg overflow-hidden shadow-md p-6 transition duration-300 ease-in-out">
+                        <div class="feature-icon mb-4 h-12 w-12 rounded-md bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                            <i class="fas fa-cloud text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">iCloud Sync</h3>
+                        <p class="text-gray-500">
+                            Keep all of your recipes backed up and available on all your Apple devices automatically.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="bg-[rgb(75,111,149)]">
+        <div class="max-w-2xl mx-auto text-center py-16 px-4 sm:py-20 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-extrabold text-white sm:text-4xl">
+                <span class="block">Ready to transform your cooking?</span>
+                <span class="block">Start using Saucier today.</span>
+            </h2>
+            <p class="mt-4 text-lg leading-6 text-blue-200">
+                Join thousands of home cooks who have simplified their meal planning with Saucier.
+            </p>
+            <a href="#" class="mt-8 w-full inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-indigo-600 bg-white hover:bg-indigo-50 sm:w-auto">
+                Download Now
+            </a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <div class="xl:grid xl:grid-cols-3 xl:gap-8">
+                <div class="space-y-8 xl:col-span-1">
+                    <div class="flex items-center">
+                        <i class="fas fa-utensils text-2xl text-white mr-2"></i>
+                        <span class="text-xl font-bold text-white">Saucier</span>
+                    </div>
+                    <p class="text-gray-300 text-base">
+                        Making cooking enjoyable and organized since 2023.
+                    </p>
+                    <div class="flex space-x-6">
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-facebook text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-instagram text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="mt-12 grid grid-cols-2 gap-8 xl:mt-0 xl:col-span-2">
+                    <div class="md:grid md:grid-cols-2 md:gap-8">
+                        <div>
+                            <h3 class="text-sm font-semibold text-gray-300 tracking-wider uppercase">
+                                Product
+                            </h3>
+                            <ul class="mt-4 space-y-4">
+                                <li>
+                                    <a href="#" class="text-base text-gray-400 hover:text-white">
+                                        Features
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" class="text-base text-gray-400 hover:text-white">
+                                        Pricing
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" class="text-base text-gray-400 hover:text-white">
+                                        Download
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="mt-12 md:mt-0">
+                            <h3 class="text-sm font-semibold text-gray-300 tracking-wider uppercase">
+                                Support
+                            </h3>
+                            <ul class="mt-4 space-y-4">
+                                <li>
+                                    <a href="#" class="text-base text-gray-400 hover:text-white">
+                                        Help Center
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" class="text-base text-gray-400 hover:text-white">
+                                        Community
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" class="text-base text-gray-400 hover:text-white">
+                                        Contact Us
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="md:grid md:grid-cols-2 md:gap-8">
+                        <div>
+                            <h3 class="text-sm font-semibold text-gray-300 tracking-wider uppercase">
+                                Company
+                            </h3>
+                            <ul class="mt-4 space-y-4">
+                                <li>
+                                    <a href="#" class="text-base text-gray-400 hover:text-white">
+                                        About
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" class="text-base text-gray-400 hover:text-white">
+                                        Blog
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" class="text-base text-gray-400 hover:text-white">
+                                        Careers
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="mt-12 md:mt-0">
+                            <h3 class="text-sm font-semibold text-gray-300 tracking-wider uppercase">
+                                Legal
+                            </h3>
+                            <ul class="mt-4 space-y-4">
+                                <li>
+                                    <a href="#" class="text-base text-gray-400 hover:text-white">
+                                        Privacy
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" class="text-base text-gray-400 hover:text-white">
+                                        Terms
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" class="text-base text-gray-400 hover:text-white">
+                                        Cookie Policy
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-12 border-t border-gray-700 pt-8">
+                <p class="text-base text-gray-400 text-center">
+                    &copy; 2023 Saucier. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Simple JavaScript for mobile menu toggle (could be expanded)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Feature cards animation on scroll
+            const featureCards = document.querySelectorAll('.feature-card');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = 1;
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            featureCards.forEach((card, index) => {
+                card.style.opacity = 0;
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = `all 0.5s ease ${index * 0.1}s`;
+                observer.observe(card);
+            });
+        });
+    </script>
+</body>
+</html>
