@@ -3,6 +3,8 @@ import type { Ingredient, Instruction, Recipe } from "./types/recipe";
 // CloudKit type declaration
 declare const CloudKit: any;
 
+type ContainerType = 'privateCloudDatabase' | 'publicCloudDatabase';
+
 // CloudKit Configuration
 // Note: These values need to be configured in CloudKit Dashboard
 const api_key = 'f6d6d9a419f857c100ebc56bc57af8a353348a922802fb66e066b2f8d32a4e9d';
@@ -249,12 +251,12 @@ export const gotoUnauthenticatedState = () => {
     return allRecordsArray;
   }
 
-  export const fetchRecords = async (): Promise<Recipe[]> => {
+  export const fetchRecords = async (containerType: ContainerType = 'privateCloudDatabase'): Promise<Recipe[]> => {
     const container = CloudKit.getDefaultContainer();
     if (!container) {
       throw new Error('CloudKit container not available');
     }
-    const database = container.privateCloudDatabase;
+    const database = container[containerType];
     const query = { 
       recordType: 'CD_Recipe',
       sortBy: [{
@@ -280,12 +282,12 @@ export const gotoUnauthenticatedState = () => {
     return uniqueRecipes;
   }
 
-  export const fetchRecipeImages = (recipeID: string) => {
+  export const fetchRecipeImages = (recipeID: string, containerType: ContainerType = 'privateCloudDatabase') => {
     const container = CloudKit.getDefaultContainer();
     if (!container) {
       throw new Error('CloudKit container not available');
     }
-    const database = container.privateCloudDatabase;
+    const database = container[containerType];
     const query = { recordType: 'CD_RecipeImage', filterBy: 
         {
             "fieldName": "CD_recipe",
@@ -299,12 +301,12 @@ export const gotoUnauthenticatedState = () => {
     return handleQuery(database, query, false)
   }
 
-  export const fetchRecipeIngredients = async (recipeID: string): Promise<Ingredient[]> => {
+  export const fetchRecipeIngredients = async (recipeID: string, containerType: ContainerType = 'privateCloudDatabase'): Promise<Ingredient[]> => {
     const container = CloudKit.getDefaultContainer();
     if (!container) {
       throw new Error('CloudKit container not available');
     }
-    const database = container.privateCloudDatabase;
+    const database = container[containerType];
     const query = { recordType: 'CD_Ingredient', filterBy: 
         {
             "fieldName": "CD_recipe",
@@ -323,12 +325,12 @@ export const gotoUnauthenticatedState = () => {
     }))
   }
 
-  export const fetchRecipeInstructions = async (recipeID: string): Promise<Instruction[]> => {
+  export const fetchRecipeInstructions = async (recipeID: string, containerType: ContainerType = 'privateCloudDatabase'): Promise<Instruction[]> => {
     const container = CloudKit.getDefaultContainer();
     if (!container) {
       throw new Error('CloudKit container not available');
     }
-    const database = container.privateCloudDatabase;
+    const database = container[containerType];
     const query = { recordType: 'CD_Instruction', filterBy: 
         {
             "fieldName": "CD_recipe",

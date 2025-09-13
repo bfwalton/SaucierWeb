@@ -81,12 +81,12 @@ function App() {
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-2">
+            <a className="flex items-center space-x-2" href="https://www.saucier-app.com">
               <img src={logo} alt="Saucier" width="44" height="44" className="rounded-lg"></img>
               <h1 className="text-2xl font-bold text-saucier-blue">Saucier</h1>
-            </div>
+            </a>
             <div className="flex items-center space-x-3">
-              <div id="apple-sign-in-button"></div>
+              {/* <div id="apple-sign-in-button"></div> */}
               <div id="apple-sign-out-button" className="hidden"></div>
               {authenticated && (
                 <div className="flex items-center space-x-2 text-sm text-gray-600">
@@ -111,10 +111,7 @@ function App() {
             <div className="mx-auto w-24 h-24 bg-red-100 rounded-full flex items-center justify-center mb-6">
               <div className="text-4xl">⚠️</div>
             </div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">CloudKit Connection Failed</h2>
-            <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-              Unable to connect to your CloudKit database. Please check your configuration.
-            </p>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Login To iCloud to View your Recipes</h2>
             {authError && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4 max-w-md mx-auto mb-6">
                 <div className="flex items-start space-x-3">
@@ -134,7 +131,7 @@ function App() {
               <div className="space-y-4">
                 <p className="text-sm text-gray-600 text-center">Sign in with your Apple ID to access your recipes</p>
                 <div id="apple-sign-in-button" className="min-h-[44px] flex items-center justify-center">
-                  <div className="text-gray-400 text-sm">Loading sign-in button...</div>
+                  {/* <div className="text-gray-400 text-sm">Loading sign-in button...</div> */}
                 </div>
                 {authError && (
                   <div className="pt-4 border-t border-gray-200">
