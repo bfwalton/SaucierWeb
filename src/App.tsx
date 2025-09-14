@@ -25,7 +25,6 @@ function App() {
   })
 
   const [authenticated, setAuthenticated] = useState(false);
-  const authError = undefined;
   const cloudKitReady = true;
 
   const [ckWebAuthToken, setCKWebAuthToken] = useState<string | null>();
