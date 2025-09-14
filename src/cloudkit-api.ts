@@ -36,8 +36,9 @@ export class CloudKitAPI {
     
     // MARK: URL
     baseURL(): URL {
+        const dbType = this.containerType === 'publicCloudDatabase' ? 'public' : 'private';
         return new URL(
-            `https://api.apple-cloudkit.com/database/1/${this.environment}/${this.containerType}/private`
+            `https://api.apple-cloudkit.com/database/1/${this.environment}/${this.containerType}/${dbType}`
         );
     }
 
@@ -75,8 +76,9 @@ export class CloudKitAPI {
     }
 
     fetchURL(): URL {
+        const dbType = this.containerType === 'publicCloudDatabase' ? 'public' : 'private';
         const url = new URL(
-            `https://api.apple-cloudkit.com/database/1/${this.containerIdentifier}/${this.environment}/private/records/query`
+            `https://api.apple-cloudkit.com/database/1/${this.containerIdentifier}/${this.environment}/${dbType}/records/query`
         )
 
         return this.addAuthParameters(url)
@@ -88,6 +90,9 @@ export class CloudKitAPI {
         const fetchURL = this.fetchURL();
         const request = await fetch(fetchURL, {
             method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify({
                 "query": query
             })
@@ -102,15 +107,31 @@ export class CloudKitAPI {
         do {
             records = records.concat(json.records);
 
-            const request = await fetch(fetchURL, {
-                method: "POST",
-                body: JSON.stringify({
-                    "query": query,
-                    "continuationMarker": json.continuationMarker
-                })
-            });
-            
-            json = await request.json();
+            if (json.continuationMarker) {
+                const request = await fetch(fetchURL, {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        "query": query,
+                        "continuationMarker": json.continuationMarker
+                    })
+                });
+
+                if (!request.ok) {
+                    const errorText = await request.text();
+                    console.error('CloudKit API Error (continuation):', request.status, errorText);
+                    throw new Error(`CloudKit API continuation request failed: ${request.status} ${request.statusText}`);
+                }
+                
+                json = await request.json();
+
+                if (json.hasErrors) {
+                    console.error('CloudKit response errors (continuation):', json.errors);
+                    throw new Error(`CloudKit returned errors in continuation: ${JSON.stringify(json.errors)}`);
+                }
+            }
         } while(json.continuationMarker)
 
         return records;
@@ -136,6 +157,61 @@ export class CloudKitAPI {
         }));
 
         return mappedRecipes;
+    }
+
+    lookupURL(): URL {
+        const dbType = this.containerType === 'publicCloudDatabase' ? 'public' : 'private';
+        const url = new URL(
+            `https://api.apple-cloudkit.com/database/1/${this.containerIdentifier}/${this.environment}/${dbType}/records/lookup`
+        )
+
+        return this.addAuthParameters(url)
+    }
+
+    async lookup(recordID: string): Promise<any | undefined> {
+        const fetchURL = this.lookupURL();
+        const request = await fetch(fetchURL, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                "records": [
+                   {  "recordName": recordID }
+                ]
+            })
+        })
+
+        const json = await request.json();
+
+        return json.records;
+    }
+
+    async fetchRecipeById(recipeId: string): Promise<Recipe | null> {
+        // const query = { 
+        //     recordType: 'CD_Recipe',
+        //     filterBy: {
+        //         "fieldName": "recordName",
+        //         "comparator": "EQUALS",
+        //         "fieldValue": {
+        //             "value": recipeId
+        //         }
+        //     }
+        // };
+
+        const records = await this.lookup(recipeId);//this.fetchRecords(query, false);
+        
+        if (records.length === 0) {
+            return null;
+        }
+
+        const record = records[0];
+        return {
+            "id": record["recordName"],
+            "name": record["fields"]?.["CD_name"]?.["value"],
+            "ingredients": undefined,
+            "instructions": undefined
+        };
     }
 
     async fetchRecipeIngredients(recipeID: string): Promise<Ingredient[]> {

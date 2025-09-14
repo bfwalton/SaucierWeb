@@ -6,12 +6,17 @@ import Pagination from './Pagination'
 import type { Recipe } from './types/recipe'
 import type { CloudKitAPI } from './cloudkit-api'
 
-function RecipeList({ recipes, api }: { recipes: Recipe[], api: CloudKitAPI }) {
+function RecipeList({ recipes, api, isPublicView = false, onRecipeModalOpen }: { 
+  recipes: Recipe[], 
+  api: CloudKitAPI, 
+  isPublicView?: boolean,
+  onRecipeModalOpen?: (recipe: Recipe) => void 
+}) {
     const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null)
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [searchTerm, setSearchTerm] = useState('')
     const [currentPage, setCurrentPage] = useState(1)
-    const itemsPerPage = 200
+    const itemsPerPage = 20
 
     // Filter recipes based on search term
     const filteredRecipes = useMemo(() => {
@@ -49,11 +54,17 @@ function RecipeList({ recipes, api }: { recipes: Recipe[], api: CloudKitAPI }) {
     const handleOpenModal = (recipe: Recipe) => {
         setSelectedRecipe(recipe)
         setIsModalOpen(true)
+        onRecipeModalOpen?.(recipe)
     }
 
     const handleCloseModal = () => {
         setIsModalOpen(false)
         setSelectedRecipe(null)
+        // Remove URL parameters when closing modal
+        const url = new URL(window.location.href)
+        url.searchParams.delete('recipeId')
+        url.searchParams.delete('database')
+        window.history.pushState({}, '', url.toString())
     }
 
     if (recipes.length === 0) {
@@ -62,9 +73,14 @@ function RecipeList({ recipes, api }: { recipes: Recipe[], api: CloudKitAPI }) {
                 <div className="mx-auto w-24 h-24 rounded-full flex items-center justify-center mb-6" style={{backgroundColor: '#1F4A6620'}}>
                     <div className="text-4xl">🍳</div>
                 </div>
-                <h2 className="text-2xl font-semibold text-gray-900 mb-4">No recipes yet</h2>
+                <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+                    {isPublicView ? 'No public recipes available' : 'No recipes yet'}
+                </h2>
                 <p className="text-gray-600 max-w-md mx-auto">
-                    Start building your recipe collection by adding your first recipe to your CloudKit database.
+                    {isPublicView 
+                        ? 'There are no public recipes shared by the community yet.'
+                        : 'Start building your recipe collection by adding your first recipe to your CloudKit database.'
+                    }
                 </p>
             </div>
         )
@@ -75,10 +91,12 @@ function RecipeList({ recipes, api }: { recipes: Recipe[], api: CloudKitAPI }) {
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
                 <div>
-                    <h2 className="text-3xl font-bold text-gray-900">Your Recipes</h2>
+                    <h2 className="text-3xl font-bold text-gray-900">
+                        {isPublicView ? 'Public Recipes' : 'Your Recipes'}
+                    </h2>
                     <p className="text-gray-600 mt-1">
                         {filteredRecipes.length} recipe{filteredRecipes.length !== 1 ? 's' : ''} 
-                        {searchTerm ? ` matching "${searchTerm}"` : ' in your collection'}
+                        {searchTerm ? ` matching "${searchTerm}"` : (isPublicView ? ' shared by the community' : ' in your collection')}
                     </p>
                 </div>
             </div>
@@ -119,6 +137,7 @@ function RecipeList({ recipes, api }: { recipes: Recipe[], api: CloudKitAPI }) {
                                 recipe={recipe}
                                 onOpenModal={handleOpenModal}
                                 api={api}
+                                isPublicView={isPublicView}
                             />
                         ))}
                     </div>
