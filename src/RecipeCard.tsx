@@ -1,20 +1,23 @@
 import { useEffect, useState } from 'react'
-import { fetchRecipeImages } from './cloudkit.ts'
+// import { fetchRecipeImages } from './cloudkit.ts'
 import type { Recipe } from './types/recipe.ts';
+import type { CloudKitAPI } from './cloudkit-api.ts';
 
 interface RecipeCardProps {
     recipe: Recipe
+    api: CloudKitAPI
     onOpenModal: (recipe: Recipe) => void
 }
 
-function RecipeCard({ recipe, onOpenModal }: RecipeCardProps) {
+function RecipeCard({ recipe, onOpenModal, api }: RecipeCardProps) {
     const [recipeImage, setRecipeImage] = useState<any>(undefined)
     const [imageLoading, setImageLoading] = useState(true)
 
     useEffect(() => {
         (async () => {
             try {
-                const recipeImages = await fetchRecipeImages(recipe.id)
+                console.log("Recipe Card", api)
+                const recipeImages = await api.fetchRecipeImages(recipe.id)
                 if (recipeImages && recipeImages.length > 0) {
                     setRecipeImage(recipeImages[0])
                 }
@@ -24,7 +27,7 @@ function RecipeCard({ recipe, onOpenModal }: RecipeCardProps) {
                 setImageLoading(false)
             }
         })()
-    }, [recipe])
+    }, [api, recipe])
 
     const renderImage = () => {
         if (imageLoading) {

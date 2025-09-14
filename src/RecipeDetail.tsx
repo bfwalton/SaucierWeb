@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { fetchRecipeInstructions, fetchRecipeIngredients } from './cloudkit.ts'
+import { CloudKitAPI } from './cloudkit-api.ts'
 import type { Ingredient, Instruction, Recipe } from "./types/recipe.ts";
 
-function RecipeDetail({ recipe }: { recipe: Recipe }) {
+function RecipeDetail({ recipe, api }: { recipe: Recipe, api: CloudKitAPI }) {
     const [ingredients, setIngredients] = useState<Ingredient[]>([])
     const [instructions, setInstructions] = useState<Instruction[]>([])
     const [isLoading, setIsLoading] = useState(false)
@@ -12,8 +12,8 @@ function RecipeDetail({ recipe }: { recipe: Recipe }) {
             setIsLoading(true)
             try {
                 const [fetchedIngredients, fetchedInstructions] = await Promise.all([
-                    fetchRecipeIngredients(recipe.id),
-                    fetchRecipeInstructions(recipe.id)
+                    api.fetchRecipeIngredients(recipe.id),
+                    api.fetchRecipeInstructions(recipe.id)
                 ])
                 setIngredients(fetchedIngredients)
                 setInstructions(fetchedInstructions)
@@ -23,7 +23,7 @@ function RecipeDetail({ recipe }: { recipe: Recipe }) {
                 setIsLoading(false)
             }
         })()
-    }, [recipe.id])
+    }, [api, recipe.id])
 
     if (isLoading) {
         return (

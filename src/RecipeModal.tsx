@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react'
-import { fetchRecipeImages } from './cloudkit.ts'
+import { CloudKitAPI } from './cloudkit-api.ts'
 import RecipeDetail from './RecipeDetail.tsx'
 import type { Recipe } from './types/recipe.ts'
 
 interface RecipeModalProps {
   recipe: Recipe | null
   isOpen: boolean
+  api: CloudKitAPI,
   onClose: () => void
 }
 
-function RecipeModal({ recipe, isOpen, onClose }: RecipeModalProps) {
+function RecipeModal({ recipe, isOpen, onClose, api }: RecipeModalProps) {
   const [recipeImage, setRecipeImage] = useState<any>(undefined)
   const [imageLoading, setImageLoading] = useState(true)
 
@@ -18,7 +19,7 @@ function RecipeModal({ recipe, isOpen, onClose }: RecipeModalProps) {
       (async () => {
         setImageLoading(true)
         try {
-          const recipeImages = await fetchRecipeImages(recipe.id)
+          const recipeImages = await api.fetchRecipeImages(recipe.id)
           if (recipeImages && recipeImages.length > 0) {
             setRecipeImage(recipeImages[0])
           }
@@ -95,7 +96,10 @@ function RecipeModal({ recipe, isOpen, onClose }: RecipeModalProps) {
           {/* Content */}
           <div className="overflow-y-auto max-h-[calc(90vh-80px)]">
             {renderImage()}
-            <RecipeDetail recipe={recipe} />
+            <RecipeDetail
+              recipe={recipe}
+              api={api}
+            />
           </div>
         </div>
       </div>

@@ -4,8 +4,9 @@ import RecipeModal from './RecipeModal'
 import SearchBar from './SearchBar'
 import Pagination from './Pagination'
 import type { Recipe } from './types/recipe'
+import type { CloudKitAPI } from './cloudkit-api'
 
-function RecipeList({ recipes }: { recipes: Recipe[] }) {
+function RecipeList({ recipes, api }: { recipes: Recipe[], api: CloudKitAPI }) {
     const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null)
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [searchTerm, setSearchTerm] = useState('')
@@ -113,7 +114,12 @@ function RecipeList({ recipes }: { recipes: Recipe[] }) {
                     {/* Recipe Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {paginatedRecipes.map(recipe => (
-                            <RecipeCard key={recipe.id} recipe={recipe} onOpenModal={handleOpenModal} />
+                            <RecipeCard
+                                key={recipe.id}
+                                recipe={recipe}
+                                onOpenModal={handleOpenModal}
+                                api={api}
+                            />
                         ))}
                     </div>
 
@@ -136,6 +142,7 @@ function RecipeList({ recipes }: { recipes: Recipe[] }) {
                 recipe={selectedRecipe} 
                 isOpen={isModalOpen} 
                 onClose={handleCloseModal} 
+                api={api}
             />
         </div>
     )

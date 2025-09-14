@@ -1,79 +1,65 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import logo from './assets/logo.png'
 import type { Recipe } from './types/recipe'
 import RecipeList from './RecipeList.js'
 
-import { configureContainer, fetchRecords, isAuthenticated, authError, addAuthStateChangeListener, removeAuthStateChangeListener } from './cloudkit.ts'
+// import { configureContainer, fetchRecords, isAuthenticated, authError, addAuthStateChangeListener, removeAuthStateChangeListener } from './cloudkit.ts'
+import { CloudKitAPI } from './cloudkit-api.ts'
 
 function App() {
   const [recipes, setRecipes] = useState<Recipe[]>([])
-  const [loading, setLoading] = useState(false)
-  const [cloudKitReady, setCloudKitReady] = useState(false)
-  const [authenticated, setAuthenticated] = useState(isAuthenticated)
+  // const [loading, setLoading] = useState(false)
+  // const [cloudKitReady, setCloudKitReady] = useState(false)
+  // const [authenticated, setAuthenticated] = useState(false)
+
+  const api_key = 'f6d6d9a419f857c100ebc56bc57af8a353348a922802fb66e066b2f8d32a4e9d'
+  const environment = 'production'
+  const container_identifier = 'iCloud.com.bfwalton.saucier'
+
+  const [loading, setLoading] = useState(false);
+  const [authenticated, setAuthenticated] = useState(false);
+  const [cloudKitReady, setCloudKitReady] = useState(true);
+  const [authError, setAuthError] = useState<string | undefined>(undefined);
+
+  const [ckWebAuthToken, setCKWebAuthToken] = useState<string | null>();
+  
+  const api = useMemo(() => (
+    new CloudKitAPI(
+      'privateCloudDatabase',
+      api_key,
+      environment,
+      container_identifier,
+      ckWebAuthToken
+    )
+  ), [api_key, environment, container_identifier, ckWebAuthToken]);
 
   useEffect(() => {
-    if (authenticated) {
-      setLoading(true)
-      fetchRecords()
-        .then(records => {
-          setRecipes(records)
-          setLoading(false)
-        })
-        .catch(error => {
-          console.error('Error fetching recipes:', error)
-          setLoading(false)
-        })
-    }
-  }, [authenticated])
+    const params = new URLSearchParams(window.location.search);
+    setCKWebAuthToken(params.get('ckWebAuthToken'))
 
-  // Listen for authentication state changes
-  useEffect(() => {
-    const handleAuthStateChange = (isAuth: boolean) => {
-      console.info('🔄 Auth state changed:', isAuth)
-      setAuthenticated(isAuth)
+    if (api.isAuthenticated()) {
+      setAuthenticated(api.isAuthenticated());
     }
+  }, [api])
 
-    addAuthStateChangeListener(handleAuthStateChange)
-    
-    return () => {
-      removeAuthStateChangeListener(handleAuthStateChange)
-    }
-  }, [])
+  async function triggerSignin() {
+    await api.handleAuthFlow()
+  }
 
-  useEffect(() => {
-    const initCloudKit = async () => {
+  const loadRecipes = useMemo(() => {
+    return async () => {
       try {
-        await configureContainer();
-        setCloudKitReady(true);
+        const records = await api.fetchRecipes();
+        setRecipes(records);
       } catch (error) {
-        console.error('Failed to initialize CloudKit:', error);
-        setCloudKitReady(true); // Still show UI even if CloudKit fails
+        console.error('Error fetching recipes:', error);
       }
     };
-    
-    // Wait for CloudKit JS library to load
-    if (typeof (window as any).CloudKit !== 'undefined') {
-      initCloudKit();
-    } else {
-      const checkCloudKit = setInterval(() => {
-        if (typeof (window as any).CloudKit !== 'undefined') {
-          clearInterval(checkCloudKit);
-          initCloudKit();
-        }
-      }, 100);
-      
-      // Timeout after 10 seconds
-      setTimeout(() => {
-        clearInterval(checkCloudKit);
-        setCloudKitReady(true);
-      }, 10000);
-    }
-  }, [])
+  }, [api]);
 
-  // CloudKit event listener for when library loads
-  window.addEventListener('cloudkitloaded', function() {
-    configureContainer()
-  });
+  useEffect(() => {
+    loadRecipes()
+  }, [authenticated, loadRecipes])
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -130,9 +116,9 @@ function App() {
             <div className="bg-white rounded-lg shadow-sm p-6 max-w-md mx-auto">
               <div className="space-y-4">
                 <p className="text-sm text-gray-600 text-center">Sign in with your Apple ID to access your recipes</p>
-                <div id="apple-sign-in-button" className="min-h-[44px] flex items-center justify-center">
-                  {/* <div className="text-gray-400 text-sm">Loading sign-in button...</div> */}
-                </div>
+                <button className="min-h-[44px] bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={triggerSignin}>
+                  <div className="text-white-400 text-sm">Sign in with Apple</div>
+                </button>
                 {authError && (
                   <div className="pt-4 border-t border-gray-200">
                     <button
@@ -152,11 +138,14 @@ function App() {
             <p className="text-gray-600">Loading your delicious recipes...</p>
           </div>
         ) : (
-          <RecipeList recipes={recipes} />
+          <RecipeList
+            recipes={recipes}
+            api={api}
+          />
         )}
       </main>
     </div>
   )
 }
 
-export default App
+export default App;
