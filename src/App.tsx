@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import logo from './assets/logo.png'
 import type { Recipe } from './types/recipe'
 import RecipeList from './RecipeList.js'
@@ -50,18 +50,22 @@ function App() {
     )
   ), [api_key, environment, container_identifier, ckWebAuthToken]);
 
+  // Initialize auth token and authentication state once on mount
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    setCKWebAuthToken(params.get('ckWebAuthToken'))
-
-    if (privateAPI.isAuthenticated()) {
-      setAuthenticated(privateAPI.isAuthenticated());
+    const token = params.get('ckWebAuthToken');
+    setCKWebAuthToken(token);
+    
+    // Check authentication status with the stored token
+    const storedToken = token || localStorage.getItem('ckWebAuthToken');
+    if (storedToken) {
+      setAuthenticated(true);
     }
-  }, [privateAPI])
+  }, [])
 
-  async function triggerSignin() {
-    await privateAPI.handleAuthFlow()
-  }
+  const triggerSignin = useCallback(async () => {
+    await privateAPI.handleAuthFlow();
+  }, [privateAPI]);
 
   const loadPrivateRecipes = useMemo(() => {
     return async () => {
@@ -91,29 +95,48 @@ function App() {
     };
   }, [publicAPI]);
 
+  // Track if we've switched to private tab to avoid infinite loops
+  const hasAutoSwitchedToPrivate = useRef(false);
+  
+  // Load private recipes when authenticated
   useEffect(() => {
     if (authenticated) {
-      loadPrivateRecipes()
-      // Switch to private tab when user logs in, unless they're already on a specific tab
-      if (activeTab === 'public' && !window.location.search.includes('database=public')) {
-        setActiveTab('private')
-      }
+      loadPrivateRecipes();
     }
-    loadPublicRecipes()
-  }, [authenticated, loadPrivateRecipes, loadPublicRecipes, activeTab])
+  }, [authenticated, loadPrivateRecipes]);
+  
+  // Auto-switch to private tab when user logs in
+  useEffect(() => {
+    if (authenticated && !hasAutoSwitchedToPrivate.current && activeTab === 'public' && !window.location.search.includes('database=public')) {
+      setActiveTab('private');
+      hasAutoSwitchedToPrivate.current = true;
+    }
+  }, [authenticated, activeTab]);
+  
+  // Load public recipes once on mount
+  useEffect(() => {
+    loadPublicRecipes();
+  }, [loadPublicRecipes]);
 
+  // Parse URL parameters once and memoize
+  const urlParams = useMemo(() => {
+    const params = new URLSearchParams(window.location.search);
+    return {
+      recipeId: params.get('recipeId'),
+      database: params.get('database') as 'private' | 'public' | null
+    };
+  }, []);
+  
   // Handle URL parameters for direct recipe access
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const recipeId = params.get('recipeId');
-    const database = params.get('database') as 'private' | 'public' | null;
+    const { recipeId, database } = urlParams;
 
     if (recipeId && database) {
       const fetchUrlRecipe = async () => {
         try {
           console.log(`Fetching recipe ${recipeId} from ${database} database`);
           setUrlRecipeLoading(true);
-          const api = publicAPI;//database === 'private' ? privateAPI : publicAPI;
+          const api = database === 'private' ? privateAPI : publicAPI;
           const recipe = await api.fetchRecipeById(recipeId);
           
           console.log('Fetched recipe:', recipe);
@@ -134,7 +157,7 @@ function App() {
 
       fetchUrlRecipe();
     }
-  }, [privateAPI, publicAPI])
+  }, [urlParams, privateAPI, publicAPI])
 
   const handleTabChange = (tab: TabType) => {
     setActiveTab(tab)
