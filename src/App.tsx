@@ -3,23 +3,23 @@ import logo from './assets/logo.png'
 import type { Recipe } from './types/recipe'
 import RecipeList from './RecipeList.js'
 
-// import { configureContainer, fetchRecords, isAuthenticated, authError, addAuthStateChangeListener, removeAuthStateChangeListener } from './cloudkit.ts'
 import { CloudKitAPI } from './cloudkit-api.ts'
 
 function App() {
   const [recipes, setRecipes] = useState<Recipe[]>([])
-  // const [loading, setLoading] = useState(false)
-  // const [cloudKitReady, setCloudKitReady] = useState(false)
-  // const [authenticated, setAuthenticated] = useState(false)
+  const [loading, setLoading] = useState(false)
 
-  const api_key = 'f6d6d9a419f857c100ebc56bc57af8a353348a922802fb66e066b2f8d32a4e9d'
-  const environment = 'production'
-  const container_identifier = 'iCloud.com.bfwalton.saucier'
+  const api_key = import.meta.env.VITE_CLOUDKIT_API_TOKEN;
+  const environment = import.meta.env.VITE_CLOUDKIT_ENVIRONMENT;
+  const container_identifier = import.meta.env.VITE_CONTAINER_IDENTIFIER;
 
-  const [loading, setLoading] = useState(false);
+  console.log(`Using Environment`, {
+    api_key, environment, container_identifier
+  })
+
   const [authenticated, setAuthenticated] = useState(false);
-  const [cloudKitReady, setCloudKitReady] = useState(true);
-  const [authError, setAuthError] = useState<string | undefined>(undefined);
+  const authError = undefined;
+  const cloudKitReady = true;
 
   const [ckWebAuthToken, setCKWebAuthToken] = useState<string | null>();
   
@@ -49,8 +49,10 @@ function App() {
   const loadRecipes = useMemo(() => {
     return async () => {
       try {
+        setLoading(true)
         const records = await api.fetchRecipes();
         setRecipes(records);
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching recipes:', error);
       }

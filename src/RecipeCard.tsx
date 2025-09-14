@@ -16,7 +16,6 @@ function RecipeCard({ recipe, onOpenModal, api }: RecipeCardProps) {
     useEffect(() => {
         (async () => {
             try {
-                console.log("Recipe Card", api)
                 const recipeImages = await api.fetchRecipeImages(recipe.id)
                 if (recipeImages && recipeImages.length > 0) {
                     setRecipeImage(recipeImages[0])

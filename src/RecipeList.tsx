@@ -11,7 +11,7 @@ function RecipeList({ recipes, api }: { recipes: Recipe[], api: CloudKitAPI }) {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [searchTerm, setSearchTerm] = useState('')
     const [currentPage, setCurrentPage] = useState(1)
-    const itemsPerPage = 12
+    const itemsPerPage = 200
 
     // Filter recipes based on search term
     const filteredRecipes = useMemo(() => {

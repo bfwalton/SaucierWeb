@@ -70,8 +70,6 @@ export class CloudKitAPI {
 
             // Redirect to the redirectURL
             window.location.href = redirectURL;
-            
-            console.log(json);
         })
         .catch(error => console.log(error))
     }
@@ -84,7 +82,7 @@ export class CloudKitAPI {
         return this.addAuthParameters(url)
     }
 
-    async fetchRecords(query: any, fetchAll?: boolean = true): (Promise<(any[])>) {
+    async fetchRecords(query: any, fetchAll: boolean = true): (Promise<(any[])>) {
         let records: any[] = [];
 
         const fetchURL = this.fetchURL();
@@ -102,8 +100,6 @@ export class CloudKitAPI {
         }
 
         do {
-            console.log(json);
-
             records = records.concat(json.records);
 
             const request = await fetch(fetchURL, {
@@ -115,8 +111,6 @@ export class CloudKitAPI {
             });
             
             json = await request.json();
-
-            console.log(json.continuationMarker);
         } while(json.continuationMarker)
 
         return records;
