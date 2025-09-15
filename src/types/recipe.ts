@@ -1,6 +1,7 @@
 export interface Recipe {
   id: string;
   name: string;
+  url?: string;
   ingredients: [Ingredient] | undefined
   instructions: [Instruction] | undefined
 }

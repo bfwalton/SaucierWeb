@@ -5,7 +5,7 @@
   "type": "module",
   "homepage": "https://app.saucier-app.com",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --mode dev",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",

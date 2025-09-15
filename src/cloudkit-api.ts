@@ -88,17 +88,14 @@ export class CloudKitAPI {
         let records: any[] = [];
 
         const fetchURL = this.fetchURL();
-        const request = await fetch(fetchURL, {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                "query": query
-            })
-        })
 
-        let json = await request.json();
+        const body = JSON.stringify({
+            "query": query
+        });
+        
+        const response = await this.handleCloudKitRequest(fetchURL, body);
+
+        let json = await response.json();
 
         if (!fetchAll) {
             return json.records;
@@ -152,6 +149,7 @@ export class CloudKitAPI {
         const mappedRecipes = records.map(r => ({ 
             "id": r["recordName"],
             "name": r["fields"]?.["CD_name"]?.["value"],
+            "url": r["fields"]?.["CD_url"]?.["value"],
             "ingredients": undefined,
             "instructions": undefined
         }));
@@ -170,19 +168,15 @@ export class CloudKitAPI {
 
     async lookup(recordID: string): Promise<any | undefined> {
         const fetchURL = this.lookupURL();
-        const request = await fetch(fetchURL, {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                "records": [
-                   {  "recordName": recordID }
-                ]
-            })
+
+        const body = JSON.stringify({
+            "records": [
+                {  "recordName": recordID }
+            ]
         })
 
-        const json = await request.json();
+        const response = await this.handleCloudKitRequest(fetchURL, body);
+        const json = await response.json();
 
         return json.records;
     }
@@ -209,6 +203,7 @@ export class CloudKitAPI {
         return {
             "id": record["recordName"],
             "name": record["fields"]?.["CD_name"]?.["value"],
+            "url": record["fields"]?.["CD_url"]?.["value"],
             "ingredients": undefined,
             "instructions": undefined
         };
@@ -273,5 +268,29 @@ export class CloudKitAPI {
         const records = await this.fetchRecords(query, false);
     
         return records;
+    }
+
+    async handleCloudKitRequest(url: URL, body?: string): Promise<Response> {
+        // x-apple-cloudkit-web-auth-token
+        const method = 'POST';
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: body
+        })
+
+        const updatedAuthToken: string | null = response.headers.get('x-apple-cloudkit-web-auth-token');
+        if (updatedAuthToken) {
+            this.ckWebAuthToken = updatedAuthToken;
+        } else {
+            // The user appears to be logged out
+            console.warn("NO WebToken Recieved, user logged out");
+            this.ckWebAuthToken = undefined;
+            localStorage.removeItem('ckWebAuthToken')
+        }
+
+        return response;
     }
 }

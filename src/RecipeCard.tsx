@@ -83,6 +83,13 @@ function RecipeCard({ recipe, onOpenModal, api, isPublicView = false }: RecipeCa
         }
     }
 
+    const handleOpenUrl = (e: React.MouseEvent) => {
+        e.stopPropagation() // Prevent card click when clicking URL button
+        if (recipe.url) {
+            window.open(recipe.url, '_blank', 'noopener,noreferrer')
+        }
+    }
+
     return (
         <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden relative">
             <div 
@@ -96,31 +103,54 @@ function RecipeCard({ recipe, onOpenModal, api, isPublicView = false }: RecipeCa
                         <h3 className="text-lg font-semibold text-gray-900 truncate flex-1 mr-2">
                             {recipe.name || 'Untitled Recipe'}
                         </h3>
-                        <div className="relative">
-                            <button
-                                onClick={handleShare}
-                                className="p-1.5 rounded-full hover:bg-gray-100 transition-colors duration-200 group"
-                                title="Share recipe"
-                            >
-                                <svg 
-                                    className="w-4 h-4 text-gray-500 group-hover:text-saucier-blue transition-colors duration-200" 
-                                    fill="none" 
-                                    stroke="currentColor" 
-                                    viewBox="0 0 24 24"
+                        <div className="flex items-center space-x-1">
+                            {recipe.url && (
+                                <button
+                                    onClick={handleOpenUrl}
+                                    className="p-1.5 rounded-full hover:bg-gray-100 transition-colors duration-200 group"
+                                    title="Open recipe URL"
                                 >
-                                    <path 
-                                        strokeLinecap="round" 
-                                        strokeLinejoin="round" 
-                                        strokeWidth={2} 
-                                        d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" 
-                                    />
-                                </svg>
-                            </button>
-                            {shareTooltip && (
-                                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-10">
-                                    {shareTooltip}
-                                </div>
+                                    <svg 
+                                        className="w-4 h-4 text-gray-500 group-hover:text-saucier-blue transition-colors duration-200" 
+                                        fill="none" 
+                                        stroke="currentColor" 
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path 
+                                            strokeLinecap="round" 
+                                            strokeLinejoin="round" 
+                                            strokeWidth={2} 
+                                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" 
+                                        />
+                                    </svg>
+                                </button>
                             )}
+                            {isPublicView ? (<div className="relative">
+                                <button
+                                    onClick={handleShare}
+                                    className="p-1.5 rounded-full hover:bg-gray-100 transition-colors duration-200 group"
+                                    title="Share recipe"
+                                >
+                                    <svg 
+                                        className="w-4 h-4 text-gray-500 group-hover:text-saucier-blue transition-colors duration-200" 
+                                        fill="none" 
+                                        stroke="currentColor" 
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path 
+                                            strokeLinecap="round" 
+                                            strokeLinejoin="round" 
+                                            strokeWidth={2} 
+                                            d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" 
+                                        />
+                                    </svg>
+                                </button>
+                                {shareTooltip && (
+                                    <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-10">
+                                        {shareTooltip}
+                                    </div>
+                                )}
+                            </div>) : null}
                         </div>
                     </div>
                     <div className="flex items-center mt-2 text-sm text-gray-500">
