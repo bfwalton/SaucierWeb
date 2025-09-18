@@ -18,12 +18,19 @@ function RecipeCard({ recipe, onOpenModal, api, isPublicView = false }: RecipeCa
     useEffect(() => {
         (async () => {
             try {
+                // Reset image state when recipe changes
+                setRecipeImage(undefined)
+                setImageLoading(true)
+                
                 const recipeImages = await api.fetchRecipeImages(recipe.id)
                 if (recipeImages && recipeImages.length > 0) {
                     setRecipeImage(recipeImages[0])
+                } else {
+                    setRecipeImage(null)
                 }
             } catch (error) {
                 console.error('Error loading recipe image:', error)
+                setRecipeImage(null)
             } finally {
                 setImageLoading(false)
             }
