@@ -27,17 +27,27 @@ function App() {
   const [authenticated, setAuthenticated] = useState(false);
   const cloudKitReady = true;
 
-  const [ckWebAuthToken, setCKWebAuthToken] = useState<string | null>();
+  const [ckWebAuthToken, setCKWebAuthToken] = useState<string | null>(() => {
+    // Initialize token from localStorage on first render
+    return localStorage.getItem('ckWebAuthToken');
+  });
   
-  const privateAPI = useMemo(() => (
-    new CloudKitAPI(
+  const privateAPI = useMemo(() => {
+    const api = new CloudKitAPI(
       'privateCloudDatabase',
       api_key,
       environment,
       container_identifier,
       ckWebAuthToken
-    )
-  ), [api_key, environment, container_identifier, ckWebAuthToken]);
+    );
+    
+    // Set up authentication state change callback
+    api.setAuthStateChangeCallback((isAuthenticated) => {
+      setAuthenticated(isAuthenticated);
+    });
+    
+    return api;
+  }, [api_key, environment, container_identifier, ckWebAuthToken]);
 
   const publicAPI = useMemo(() => (
     new CloudKitAPI(
@@ -52,15 +62,36 @@ function App() {
   // Initialize auth token and authentication state once on mount
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const token = params.get('ckWebAuthToken');
-    setCKWebAuthToken(token);
+    const urlToken = params.get('ckWebAuthToken');
+    const ckSession = params.get('ckSession');
     
-    // Check authentication status with the stored token
-    const storedToken = token || localStorage.getItem('ckWebAuthToken');
-    if (storedToken) {
+    // Remove CloudKit auth parameters from URL immediately for security
+    if (urlToken || ckSession) {
+      const url = new URL(window.location.href);
+      url.searchParams.delete('ckWebAuthToken');
+      url.searchParams.delete('ckSession');
+      window.history.replaceState({}, '', url.toString());
+    }
+    
+    if (urlToken) {
+      // Update token and auth state
+      setCKWebAuthToken(urlToken);
       setAuthenticated(true);
+    } else {
+      // Check if we have a stored token and set initial auth state
+      const storedToken = localStorage.getItem('ckWebAuthToken');
+      if (storedToken) {
+        setAuthenticated(true);
+      }
     }
   }, [])
+
+  // Update the privateAPI token when ckWebAuthToken changes
+  useEffect(() => {
+    if (ckWebAuthToken) {
+      privateAPI.ckWebAuthToken = ckWebAuthToken;
+    }
+  }, [ckWebAuthToken, privateAPI])
 
   const triggerSignin = useCallback(async () => {
     await privateAPI.handleAuthFlow();

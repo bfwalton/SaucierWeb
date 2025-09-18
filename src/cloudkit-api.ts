@@ -11,6 +11,7 @@ export class CloudKitAPI {
     containerIdentifier: string;
 
     ckWebAuthToken: string | undefined | null;
+    private onAuthStateChange?: (authenticated: boolean) => void;
 
     constructor(
         containerType: ContainerType,
@@ -60,6 +61,11 @@ export class CloudKitAPI {
     updateWebAuthToken(ckWebAuthToken: string) {
         this.ckWebAuthToken = ckWebAuthToken
         localStorage.setItem("ckWebAuthToken", ckWebAuthToken);
+        this.onAuthStateChange?.(true);
+    }
+
+    setAuthStateChangeCallback(callback: (authenticated: boolean) => void) {
+        this.onAuthStateChange = callback;
     }
 
     async handleAuthFlow() {
@@ -283,12 +289,13 @@ export class CloudKitAPI {
 
         const updatedAuthToken: string | null = response.headers.get('x-apple-cloudkit-web-auth-token');
         if (updatedAuthToken) {
-            this.ckWebAuthToken = updatedAuthToken;
+            this.updateWebAuthToken(updatedAuthToken);
         } else {
             // The user appears to be logged out
             console.warn("NO WebToken Recieved, user logged out");
             this.ckWebAuthToken = undefined;
-            localStorage.removeItem('ckWebAuthToken')
+            localStorage.removeItem('ckWebAuthToken');
+            this.onAuthStateChange?.(false);
         }
 
         return response;
