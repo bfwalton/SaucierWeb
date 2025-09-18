@@ -17,20 +17,25 @@ function RecipeModal({ recipe, isOpen, onClose, api }: RecipeModalProps) {
   useEffect(() => {
     if (recipe && isOpen) {
       (async () => {
+        // Reset image state when recipe changes
+        setRecipeImage(undefined)
         setImageLoading(true)
         try {
           const recipeImages = await api.fetchRecipeImages(recipe.id)
           if (recipeImages && recipeImages.length > 0) {
             setRecipeImage(recipeImages[0])
+          } else {
+            setRecipeImage(null)
           }
         } catch (error) {
           console.error('Error loading recipe image:', error)
+          setRecipeImage(null)
         } finally {
           setImageLoading(false)
         }
       })()
     }
-  }, [recipe, isOpen])
+  }, [recipe, isOpen, api])
 
   if (!isOpen || !recipe) {
     return null
@@ -39,7 +44,7 @@ function RecipeModal({ recipe, isOpen, onClose, api }: RecipeModalProps) {
   const renderImage = () => {
     if (imageLoading) {
       return (
-        <div className="w-full h-64 bg-gray-200 rounded-t-xl flex items-center justify-center">
+        <div className="w-full h-64 bg-gray-200 md:rounded-t-xl flex items-center justify-center">
           <div className="animate-pulse text-gray-400">
             <div className="text-4xl">🖼️</div>
           </div>
@@ -52,7 +57,7 @@ function RecipeModal({ recipe, isOpen, onClose, api }: RecipeModalProps) {
       if (base64Data) {
         return (
           <img 
-            className="w-full h-64 object-cover rounded-t-xl" 
+            className="w-full h-64 md:h-64 object-cover md:rounded-t-xl" 
             src={`data:image/jpeg;base64,${base64Data}`}
             alt={recipe.name}
           />
@@ -61,7 +66,7 @@ function RecipeModal({ recipe, isOpen, onClose, api }: RecipeModalProps) {
     }
 
         return (
-            <div className="w-full h-64 rounded-t-xl flex items-center justify-center" style={{background: 'linear-gradient(135deg, #1F4A6620, #1F4A6640)'}}>
+            <div className="w-full h-64 md:rounded-t-xl flex items-center justify-center" style={{background: 'linear-gradient(135deg, #1F4A6620, #1F4A6640)'}}>
                 <div className="text-6xl opacity-60">🍳</div>
             </div>
         )
@@ -76,8 +81,8 @@ function RecipeModal({ recipe, isOpen, onClose, api }: RecipeModalProps) {
       />
       
       {/* Modal */}
-      <div className="flex min-h-full items-center justify-center p-4">
-        <div className="relative bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+      <div className="flex min-h-full lg:items-center lg:justify-center lg:p-4">
+        <div className="relative bg-white md:rounded-xl shadow-xl max-w-4xl w-full min-h-full md:min-h-0 md:h-auto md:max-h-[90vh] overflow-hidden flex flex-col">
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-gray-200">
             <h2 className="text-2xl font-bold text-gray-900 truncate">
@@ -94,7 +99,7 @@ function RecipeModal({ recipe, isOpen, onClose, api }: RecipeModalProps) {
           </div>
           
           {/* Content */}
-          <div className="overflow-y-auto max-h-[calc(90vh-80px)]">
+          <div className="overflow-y-auto flex-1 md:max-h-[calc(90vh-80px)] md:h-auto">
             {renderImage()}
             <RecipeDetail
               recipe={recipe}

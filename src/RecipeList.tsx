@@ -158,6 +158,7 @@ function RecipeList({ recipes, api, isPublicView = false, onRecipeModalOpen }: {
             )}
             
             <RecipeModal 
+                key={selectedRecipe?.id}
                 recipe={selectedRecipe} 
                 isOpen={isModalOpen} 
                 onClose={handleCloseModal} 

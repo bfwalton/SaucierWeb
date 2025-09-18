@@ -178,6 +178,12 @@ function App() {
             setActiveTab(database);
           } else {
             console.error(`Recipe with ID ${recipeId} not found in ${database} database`);
+            // Clear the URL parameters since the recipe doesn't exist
+            const url = new URL(window.location.href);
+            url.searchParams.delete('recipeId');
+            url.searchParams.delete('database');
+            window.history.replaceState({}, '', url.toString());
+            // TODO: Show user-friendly error message
           }
         } catch (error) {
           console.error('Error fetching recipe from URL:', error);

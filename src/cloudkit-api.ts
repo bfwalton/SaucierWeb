@@ -152,13 +152,31 @@ export class CloudKitAPI {
 
         const records = await this.fetchRecords(query);
 
-        const mappedRecipes = records.map(r => ({ 
-            "id": r["recordName"],
-            "name": r["fields"]?.["CD_name"]?.["value"],
-            "url": r["fields"]?.["CD_url"]?.["value"],
-            "ingredients": undefined,
-            "instructions": undefined
-        }));
+        const mappedRecipes = records.map(r => {
+            // Try different possible field names for the recipe name
+            const possibleNameFields = ['CD_name', 'name', 'CD_title', 'title'];
+            let recipeName = null;
+            
+            for (const fieldName of possibleNameFields) {
+                if (r["fields"]?.[fieldName]?.["value"]) {
+                    recipeName = r["fields"][fieldName]["value"];
+                    break;
+                }
+            }
+            
+            // If no name field found, use the record ID as fallback
+            if (!recipeName) {
+                recipeName = `Recipe ${r["recordName"].substring(0, 8)}`;
+            }
+            
+            return {
+                "id": r["recordName"],
+                "name": recipeName,
+                "url": r["fields"]?.["CD_url"]?.["value"],
+                "ingredients": undefined,
+                "instructions": undefined
+            };
+        });
 
         return mappedRecipes;
     }
@@ -182,7 +200,19 @@ export class CloudKitAPI {
         })
 
         const response = await this.handleCloudKitRequest(fetchURL, body);
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('CloudKit lookup error:', response.status, errorText);
+            throw new Error(`CloudKit lookup failed: ${response.status} ${response.statusText}`);
+        }
+        
         const json = await response.json();
+        
+        if (json.hasErrors) {
+            console.error('CloudKit lookup response errors:', json.errors);
+            throw new Error(`CloudKit returned errors: ${JSON.stringify(json.errors)}`);
+        }
 
         return json.records;
     }
@@ -206,9 +236,32 @@ export class CloudKitAPI {
         }
 
         const record = records[0];
+        
+        // Check if the record has an error (like NOT_FOUND)
+        if (record.serverErrorCode === 'NOT_FOUND' || record.reason === 'Record not found') {
+            console.error(`Recipe with ID ${recipeId} not found in CloudKit`);
+            return null;
+        }
+        
+        // Try different possible field names for the recipe name
+        const possibleNameFields = ['CD_name', 'name', 'CD_title', 'title'];
+        let recipeName = null;
+        
+        for (const fieldName of possibleNameFields) {
+            if (record["fields"]?.[fieldName]?.["value"]) {
+                recipeName = record["fields"][fieldName]["value"];
+                break;
+            }
+        }
+        
+        // If no name field found, use the record ID as fallback
+        if (!recipeName) {
+            recipeName = `Recipe ${record["recordName"].substring(0, 8)}`;
+        }
+        
         return {
             "id": record["recordName"],
-            "name": record["fields"]?.["CD_name"]?.["value"],
+            "name": recipeName,
             "url": record["fields"]?.["CD_url"]?.["value"],
             "ingredients": undefined,
             "instructions": undefined
