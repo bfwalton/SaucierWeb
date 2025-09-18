@@ -12,6 +12,7 @@ function App() {
   const [publicRecipes, setPublicRecipes] = useState<Recipe[]>([])
   const [activeTab, setActiveTab] = useState<TabType>('public')
   const [loading, setLoading] = useState(false)
+  const [privateLoading, setPrivateLoading] = useState(false)
   const [urlRecipe, setUrlRecipe] = useState<Recipe | null>(null)
   const [urlModalOpen, setUrlModalOpen] = useState(false)
   const [urlRecipeLoading, setUrlRecipeLoading] = useState(false)
@@ -100,13 +101,13 @@ function App() {
   const loadPrivateRecipes = useMemo(() => {
     return async () => {
       try {
-        setLoading(true)
+        setPrivateLoading(true)
         const records = await privateAPI.fetchRecipes();
         setPrivateRecipes(records);
-        setLoading(false);
+        setPrivateLoading(false);
       } catch (error) {
         console.error('Error fetching private recipes:', error);
-        setLoading(false);
+        setPrivateLoading(false);
       }
     };
   }, [privateAPI]);
@@ -256,7 +257,7 @@ function App() {
               isAuthenticated={authenticated}
             />
             
-            {loading ? (
+            {(loading || (activeTab === 'private' && privateLoading)) ? (
               <div className="text-center py-16">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-saucier-blue mx-auto mb-4"></div>
                 <p className="text-gray-600">Loading recipes...</p>
